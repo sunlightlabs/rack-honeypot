@@ -31,7 +31,7 @@ Then in `environment.rb`:
 
     config.middleware.use "Rack::Honeypot"
 
-That's all there is to it.
+That's all there is to it. Fire up your app, View Source on a page with a form, and see the magic.
 
 There are a few options you can pass in:
   
@@ -39,8 +39,6 @@ There are a few options you can pass in:
   * `:label` is the warning label displayed to those with CSS disabled. Defaults to "Don't fill in this field".
   * `:input_name` is the name of the form field. Ensure that this is tempting to a spambot if you modify it. Defaults to "email".
   * `:input_value` is the value of the form field that would only be modified by a spambot. Defaults to blank.
-
-See the `Rack::Honeypot#initialize` method for the defaults.
 
 If you want to modify the options used, simply do:
 
