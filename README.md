@@ -14,14 +14,14 @@ Then in `environment.rb`:
 
     config.middleware.use "Rack::Honeypot"
 
-That's all you have do do!
+That's all there is to it.
 
 There are a few options you can pass in:
   
-    :class_name is the class assigned to the parent div of the honeypot
-    :label is the warning label displayed to those with CSS disabled
-    :input_name is the name of the form field. Ensure that this is tempting to a spambot if you modify.
-    :input_value is the value of the form field that would only be modified by a spambot.
+  * `:class_name` is the class assigned to the parent div of the honeypot. Defaults to "phonetoy", an anagram of honeypot.
+  * `:label` is the warning label displayed to those with CSS disabled. Defaults to "Don't fill in this field".
+  * `:input_name` is the name of the form field. Ensure that this is tempting to a spambot if you modify it. Defaults to "email".
+  * `:input_value` is the value of the form field that would only be modified by a spambot. Defaults to blank.
 
 See the `Rack::Honeypot#initialize` method for the defaults.
 
