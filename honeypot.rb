@@ -29,8 +29,8 @@ module Rack
     def honeypotize(body)
       css = "<style type='text/css' media='all'>div.#{@class_name} {display:none;}</style>"
       honeypot_field = "<div class='#{@class_name}'><label for='#{@input_name}'>#{@label}</label><input type='text' name='#{@input_name}' value='#{@input_value}'/></div>"
-      body.gsub!(/<\/head>/, css + '</head>')
-      body.gsub!(/<form(.*)>/, '<form\1>' + honeypot_field)
+      body.gsub!(/<\/head>/, css + "\n</head>")
+      body.gsub!(/<form(.*)>/, '<form\1>' + "\n" + honeypot_field)
       body
     end
 
