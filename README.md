@@ -4,6 +4,23 @@ Written by Luigi Montanez of the Sunlight Labs. Copyright 2009.
 
 This middleware acts as a spam trap. It inserts, into every outputted `<form>`, a text field that a spambot will really want to fill in, but is actually not used by the app. The field is hidden to humans via CSS, and includes a warning label for screenreading software.
 
+In the `<body>`:
+
+    <form>
+      <div class='phonetoy'>
+        <label for='email'>Don't fill in this field</label>
+        <input type='text' name='email' value=''/>
+      </div>
+    [...]
+
+In the `<head>`:
+  
+    <style type='text/css' media='all'>
+      div.phonetoy {
+        display:none;
+      }
+    </style>
+  
 Then, for incoming requests, the middleware will check if the text field has been set to an unexpected value. If it has, that means a spambot has altered the field, and the spambot is booted to a dead end blank page.
 
 ## Configuration
