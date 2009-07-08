@@ -29,9 +29,7 @@ module Rack
     end
     
     def build_response_body(response)
-      response_body = ""
-      response.each { |part| response_body += part }
-      response_body
+      response.inject { |body, part| body += part }
     end
     
     def recalculate_body_length(headers, body)
