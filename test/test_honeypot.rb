@@ -9,8 +9,8 @@ class HoneypotTest < Test::Unit::TestCase
   include Rack::Test::Methods
 
   def app
-		hello_world_app =  lambda {|env| [200, {'Content-Type' =>  'text/plain', 'Content-Length' => '12'}, ["<html><head></head><body><form></form>Hello World!</body></html>"] ] }
-		app = Rack::Honeypot.new(hello_world_app, :input_name => 'honeypot_email')
+    hello_world_app =  lambda {|env| [200, {'Content-Type' =>  'text/plain', 'Content-Length' => '66'}, ["<html><head></head><body><form></form>Hello World!</body></html>"] ] }
+    app = Rack::Honeypot.new(hello_world_app, :input_name => 'honeypot_email')
   end
   
   def test_normal_request_should_go_through
@@ -48,7 +48,7 @@ class HoneypotTest < Test::Unit::TestCase
   end
   
   def test_spam_request_should_be_sent_to_dead_end
-    post '/', :honeypot_email => 'joe@example.com'
+    post '/', :honeypot_email => 'joe@example.com' 
     assert_equal 200, last_response.status
     assert_equal '', last_response.body
   end

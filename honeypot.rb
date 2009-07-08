@@ -10,7 +10,7 @@ module Rack
     end
 
     def call(env)
-      if spambot_submission?(env["rack.request.form_hash"])
+      if spambot_submission?(Rack::Request.new(env).params)
         send_to_dead_end
       else
         status, headers, response = @app.call(env)
