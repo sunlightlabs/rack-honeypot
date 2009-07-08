@@ -44,6 +44,16 @@ If you want to modify the options used, simply do:
 
     config.middleware.use "Rack::Honeypot", :input_name => "firstname"
 
+
+## Tests
+
+To run the tests:
+
+  sudo gem install rack-test
+  cd test
+  ruby test_honeypot.rb
+
+    
 ## Props
 
 Based on [django-honeypot](http://github.com/sunlightlabs/django-honeypot) by James Turk.
