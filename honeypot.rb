@@ -10,7 +10,7 @@ module Rack
     end
 
     def call(env)
-      if spambot_submission?(env["rack.request"].POST())
+      if spambot_submission?(env["rack.request.form_hash"])
         send_to_dead_end
       else
         status, headers, response = @app.call(env)
@@ -29,7 +29,9 @@ module Rack
     end
     
     def build_response_body(response)
-      response.inject { |body, part| body += part }
+      response_body = ""
+      response.each { |part| response_body += part }
+      response_body
     end
     
     def recalculate_body_length(headers, body)
