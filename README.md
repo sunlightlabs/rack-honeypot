@@ -49,9 +49,9 @@ If you want to modify the options used, simply do:
 
 To run the tests:
 
-  sudo gem install rack-test
-  cd test
-  ruby test_honeypot.rb
+    sudo gem install rack-test
+    cd test
+    ruby test_honeypot.rb
 
     
 ## Props
