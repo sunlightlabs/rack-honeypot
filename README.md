@@ -23,6 +23,13 @@ In the `<head>`:
   
 Then, for incoming requests, the middleware will check if the text field has been set to an unexpected value. If it has, that means a spambot has altered the field, and the spambot is booted to a dead end blank page.
 
+## Dependencies
+
+You will need to install these RubyGems:
+
+* unindentable: http://github.com/sunlightlabs/ruby-unindentable/tree/master
+* rack-test: http://github.com/brynary/rack-test/tree/master
+
 ## Configuration
 
 To use in your Rails app, place `honeypot.rb` in `lib/rack`.

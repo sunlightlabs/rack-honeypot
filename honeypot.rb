@@ -1,5 +1,9 @@
+require 'rubygems'
+require 'unindentable'
+
 module Rack
   class Honeypot
+    include Unindentable
 
     def initialize(app, options={})
       @app = app
@@ -41,21 +45,19 @@ module Rack
     end
 
     def insert_honeypot(body)
-      css = <<-CSSCODE
-      <style type='text/css' media='all'>
-        div.#{@class_name} {
-          display:none;
-        }
-      </style>
-      CSSCODE
-      
-      div = <<-DIVCODE
-      <div class='#{@class_name}'>
-        <label for='#{@input_name}'>#{@label}</label>
-        <input type='text' name='#{@input_name}' value='#{@input_value}'/>
-      </div>
-      DIVCODE
-
+      css = unindent <<-BLOCK
+        <style type='text/css' media='all'>
+          div.#{@class_name} {
+            display:none;
+          }
+        </style>
+      BLOCK
+      div = unindent <<-BLOCK
+        <div class='#{@class_name}'>
+          <label for='#{@input_name}'>#{@label}</label>
+          <input type='text' name='#{@input_name}' value='#{@input_value}'/>
+        </div>
+      BLOCK
       body.gsub!(/<\/head>/, css + "\n</head>")
       body.gsub!(/<form(.*)>/, '<form\1>' + "\n" + div)
       body
