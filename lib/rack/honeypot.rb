@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'unindentable'
 
 module Rack

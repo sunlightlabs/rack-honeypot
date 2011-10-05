@@ -1,8 +1,8 @@
-require 'rubygems'
 require 'rack/test'
 require 'test/unit'
 require 'unindentable'
-require File.expand_path(File.dirname(__FILE__) + '/../honeypot')
+
+require File.expand_path(File.dirname(__FILE__) + '/../lib/rack/honeypot')
 
 # To run this test, you need to have rack-test gem installed: sudo gem install rack-test
 
