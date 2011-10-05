@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'rack/test'
 require 'test/unit'
 require 'unindentable'

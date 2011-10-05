@@ -1,5 +1,6 @@
 source 'http://rubygems.org/'
 
-gem 'unindentable'
+gem 'rake'
+gem 'unindentable', '0.0.4'
 gem 'rack'
 gem 'rack-test'
