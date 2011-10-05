@@ -13,5 +13,7 @@ Jeweler::Tasks.new do |gem|
   gem.email = "daniel.schierbeck@gmail.com"
   gem.homepage = "http://github.com/dasch/rack-honeypot"
   gem.authors = ["Luigi Montanez", "Luc Castera", "Daniel Schierbeck"]
+  gem.add_dependency('rack')
+  gem.add_dependency('unindentable', '0.0.4')
 end
 Jeweler::RubygemsDotOrgTasks.new
