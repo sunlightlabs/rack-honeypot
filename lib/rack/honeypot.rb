@@ -16,52 +16,56 @@ module Rack
     def call(env)
       if spambot_submission?(Rack::Request.new(env).params)
         @logger.warn("[Rack::Honeypot] Spam bot detected; responded with null") unless @logger.nil?
-        send_to_dead_end
+        null_response
       else
         status, headers, response = @app.call(env)
-        new_body = insert_honeypot(build_response_body(response))
-        new_headers = recalculate_body_length(headers, new_body)
+        new_body = insert_honeypot(response_body(response))
+        new_headers = response_headers(headers, new_body)
         [status, new_headers, new_body]
       end
     end
+
+    private
 
     def spambot_submission?(form_hash)
       form_hash && form_hash[@input_name] && form_hash[@input_name] != @input_value
     end
     
-    def send_to_dead_end
+    def null_response
       [200, {'Content-Type' => 'text/html', "Content-Length" => "0"}, []]
     end
     
-    def build_response_body(response)
-      response_body = ""
-      response.each { |part| response_body += part }
-      response_body
+    def response_body(response)
+      response.join("")
     end
     
-    def recalculate_body_length(headers, body)
-      new_headers = headers
-      new_headers["Content-Length"] = body.length.to_s
-      new_headers
+    def response_headers(headers, body)
+      headers.merge("Content-Length" => body.length.to_s)
     end
 
     def insert_honeypot(body)
-      css = unindent <<-BLOCK
+      body.gsub!(/<\/head>/, css + "\n</head>")
+      body.gsub!(/<form(.*)>/, '<form\1>' + "\n" + div)
+      body
+    end
+
+    def css
+      unindent <<-BLOCK
         <style type='text/css' media='all'>
           div.#{@class_name} {
             display:none;
           }
         </style>
       BLOCK
-      div = unindent <<-BLOCK
+    end
+
+    def div
+      unindent <<-BLOCK
         <div class='#{@class_name}'>
           <label for='#{@input_name}'>#{@label}</label>
           <input type='text' name='#{@input_name}' value='#{@input_value}'/>
         </div>
       BLOCK
-      body.gsub!(/<\/head>/, css + "\n</head>")
-      body.gsub!(/<form(.*)>/, '<form\1>' + "\n" + div)
-      body
     end
 
   end
