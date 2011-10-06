@@ -10,10 +10,12 @@ module Rack
       @label        = options[:label] || "Don't fill in this field"
       @input_name   = options[:input_name] || "email"
       @input_value  = options[:input_value] || ""
+      @logger       = options[:logger]
     end
 
     def call(env)
       if spambot_submission?(Rack::Request.new(env).params)
+        @logger.warn("[Rack::Honeypot] Spam bot detected; responded with null") unless @logger.nil?
         send_to_dead_end
       else
         status, headers, response = @app.call(env)
