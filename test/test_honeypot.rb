@@ -1,5 +1,6 @@
 require 'rack/test'
 require 'test/unit'
+require 'mocha'
 require 'unindentable'
 
 require File.expand_path(File.dirname(__FILE__) + '/../lib/rack/honeypot')
@@ -9,6 +10,10 @@ require File.expand_path(File.dirname(__FILE__) + '/../lib/rack/honeypot')
 class HoneypotTest < Test::Unit::TestCase
   include Rack::Test::Methods
   include Unindentable
+
+  def setup
+    @logger = stub("logger", :warn => nil)
+  end
 
   def app
     content = unindent <<-BLOCK
@@ -21,6 +26,7 @@ class HoneypotTest < Test::Unit::TestCase
         </body>
       </html>
     BLOCK
+
     hello_world_app = lambda do |env|
       [
         200,
@@ -31,7 +37,8 @@ class HoneypotTest < Test::Unit::TestCase
         [content]
       ]
     end
-    app = Rack::Honeypot.new(hello_world_app, :input_name => 'honeypot_email')
+
+    Rack::Honeypot.new(hello_world_app, :input_name => 'honeypot_email', :logger => @logger)
   end
 
   def test_normal_request_should_go_through
@@ -72,4 +79,9 @@ class HoneypotTest < Test::Unit::TestCase
     assert_equal '', last_response.body
   end
 
+  def test_spam_request_should_be_logged
+    @logger.expects(:warn).with("[Rack::Honeypot] Spam bot detected; responded with null")
+    post '/', :honeypot_email => 'joe@example.com'
+  end
+    
 end
