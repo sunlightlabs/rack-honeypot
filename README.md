@@ -1,6 +1,6 @@
 # Honeypot, a Rack Middleware for trapping spambots
 
-Written by Luigi Montanez of the Sunlight Labs, with contributions from Luc Castera. Copyright 2009.
+Written by Luigi Montanez of Sunlight Labs, with contributions from Luc Castera and Daniel Schierbeck. Copyright 2009-2011.
 
 This middleware acts as a spam trap. It inserts, into every outputted `<form>`, a text field that a spambot will really want to fill in, but is actually not used by the app. The field is hidden to humans via CSS, and includes a warning label for screenreading software.
 
