@@ -32,7 +32,7 @@ You will need to install these RubyGems:
 
 ## Configuration
 
-To use in your Rails app, place `honeypot.rb` in `lib/rack`.
+To use in your Rails app, place `honeypot.rb` in `lib/rack` or add `rack-honeypot` to your Gemfile.
 
 Then in `environment.rb`:
 
