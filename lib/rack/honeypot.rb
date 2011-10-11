@@ -25,7 +25,7 @@ module Rack
         status, headers, body = @app.call(env)
 
         if @always_enabled || honeypot_header_present?(headers)
-          body = insert_honeypot(response_body(body))
+          body = insert_honeypot(body)
           headers = response_headers(headers, body)
         end
 
@@ -49,7 +49,12 @@ module Rack
     end
     
     def response_body(response)
-      response.join("")
+      body = ""
+
+      # The body may not be an array, so we need to call #each here.
+      response.each {|part| body << part }
+
+      body
     end
     
     def response_headers(headers, body)
@@ -57,6 +62,7 @@ module Rack
     end
 
     def insert_honeypot(body)
+      body = response_body(body)
       body.gsub!(/<\/head>/, css + "\n</head>")
       body.gsub!(/<form(.*)>/, '<form\1>' + "\n" + div)
       body
