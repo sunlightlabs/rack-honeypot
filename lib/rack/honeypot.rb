@@ -4,13 +4,17 @@ module Rack
   class Honeypot
     include Unindentable
 
+    HONEYPOT_HEADER = "X-Honeypot"
+
     def initialize(app, options={})
       @app = app
-      @class_name   = options[:class_name] || "phonetoy"
-      @label        = options[:label] || "Don't fill in this field"
-      @input_name   = options[:input_name] || "email"
-      @input_value  = options[:input_value] || ""
-      @logger       = options[:logger]
+
+      @class_name     = options[:class_name] || "phonetoy"
+      @label          = options[:label] || "Don't fill in this field"
+      @input_name     = options[:input_name] || "email"
+      @input_value    = options[:input_value] || ""
+      @logger         = options[:logger]
+      @always_enabled = options.fetch(:always_enabled, true)
     end
 
     def call(env)
@@ -18,10 +22,14 @@ module Rack
         @logger.warn("[Rack::Honeypot] Spam bot detected; responded with null") unless @logger.nil?
         null_response
       else
-        status, headers, response = @app.call(env)
-        new_body = insert_honeypot(response_body(response))
-        new_headers = response_headers(headers, new_body)
-        [status, new_headers, new_body]
+        status, headers, body = @app.call(env)
+
+        if @always_enabled || honeypot_header_present?(headers)
+          body = insert_honeypot(response_body(body))
+          headers = response_headers(headers, body)
+        end
+
+        [status, headers, body]
       end
     end
 
@@ -29,6 +37,11 @@ module Rack
 
     def spambot_submission?(form_hash)
       form_hash && form_hash[@input_name] && form_hash[@input_name] != @input_value
+    end
+
+    def honeypot_header_present?(headers)
+      header = headers.delete(HONEYPOT_HEADER)
+      header && header.index("enabled")
     end
     
     def null_response
