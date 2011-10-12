@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = %q{rack-honeypot}
-  s.version = "0.1.1"
+  s.version = "0.1.2"
   s.summary = %q{Middleware that functions as a spambot trap.}
   s.authors = ["Luigi Montanez", "Luc Castera", "Daniel Schierbeck"]
   s.date = %q{2011-10-05}
