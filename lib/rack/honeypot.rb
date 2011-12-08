@@ -15,11 +15,14 @@ module Rack
       @input_value    = options[:input_value] || ""
       @logger         = options[:logger]
       @always_enabled = options.fetch(:always_enabled, true)
+      @log_message    = options[:log_message] || DEFAULT_LOG_MESSAGE
     end
 
     def call(env)
-      if spambot_submission?(Rack::Request.new(env).params)
-        @logger.warn("[Rack::Honeypot] Spam bot detected; responded with null") unless @logger.nil?
+      request = Rack::Request.new(env)
+
+      if spambot_submission?(request.params)
+        @logger.warn("[Rack::Honeypot] " + log_message(request)) unless @logger.nil?
         null_response
       else
         status, headers, body = @app.call(env)
@@ -35,6 +38,8 @@ module Rack
 
     private
 
+    DEFAULT_LOG_MESSAGE = "Spam bot detected; responded with null"
+
     def spambot_submission?(form_hash)
       form_hash && form_hash[@input_name] && form_hash[@input_name] != @input_value
     end
@@ -42,6 +47,14 @@ module Rack
     def honeypot_header_present?(headers)
       header = headers.delete(HONEYPOT_HEADER)
       header && header.index("enabled")
+    end
+
+    def log_message(request)
+      if @log_message.respond_to?(:call)
+        @log_message.call(request)
+      else
+        @log_message
+      end
     end
     
     def null_response
