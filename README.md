@@ -46,6 +46,9 @@ There are a few options you can pass in:
   * `:label` is the warning label displayed to those with CSS disabled. Defaults to "Don't fill in this field".
   * `:input_name` is the name of the form field. Ensure that this is tempting to a spambot if you modify it. Defaults to "email".
   * `:input_value` is the value of the form field that would only be modified by a spambot. Defaults to blank.
+  * `:logger` is the Logger instance you wish to use for logging trapped requests.
+  * `:log_message` is the string message that is to be logged, or a callable object that returns a string when called with
+      a `Rack::Request`.
 
 If you want to modify the options used, simply do:
 
