@@ -18,6 +18,12 @@ class HoneypotTest < Test::Unit::TestCase
   end
 
   def app
+    return @app if @app
+
+    Rack::Honeypot.new(hello_world_app, :input_name => 'honeypot_email', :logger => @logger, :always_enabled => @always_enabled)
+  end
+
+  def hello_world_app
     content = unindent <<-BLOCK
       <html>
         <head>
@@ -37,14 +43,24 @@ class HoneypotTest < Test::Unit::TestCase
     headers['X-Honeypot'] = @honeypot_header if @honeypot_header
 
     hello_world_app = lambda {|env| [200, headers, [content]] }
-
-    Rack::Honeypot.new(hello_world_app, :input_name => 'honeypot_email', :logger => @logger, :always_enabled => @always_enabled)
   end
 
   def test_normal_request_should_go_through
     get '/'
     assert_equal 200, last_response.status
     assert_not_equal '', last_response.body
+  end
+
+  def test_custom_logging
+    Rack::Request.any_instance.stubs(:ip).returns("1.2.3.4")
+
+    log_message = proc {|request| "Intercepted request from #{request.ip}" }
+    @app = Rack::Honeypot.new(hello_world_app, :input_name => 'honeypot_email', :logger => @logger, :log_message => log_message)
+
+    @logger.expects(:warn).with("[Rack::Honeypot] Intercepted request from 1.2.3.4")
+    post '/', :honeypot_email => 'joe@example.com'
+    assert_equal 200, last_response.status
+    assert_equal '', last_response.body
   end
 
   def test_request_with_form_should_add_honeypot_css
