@@ -36,15 +36,9 @@ module Rack
     private
 
     def response_body(response)
-      if response.respond_to?(:body)
-        response.body
-      elsif response.is_a?(String)
-        response
-      elsif response.respond_to?(:each)
-        body = ""
-        response.each { |part| body << part }
-        body
-      end
+      body = response.respond_to?(:body) ? response.body : response
+      body = body.inject("") { |i, a| i << a } if body.respond_to?(:each)
+      body.to_s
     end
 
     def spambot_submission?(form_hash)
