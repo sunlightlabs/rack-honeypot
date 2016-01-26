@@ -1,6 +1,6 @@
 require 'rack/test'
 require 'test/unit'
-require 'mocha'
+require 'mocha/setup'
 require 'unindentable'
 
 require File.expand_path(File.dirname(__FILE__) + '/../lib/rack/honeypot')
@@ -30,7 +30,7 @@ class HoneypotTest < Test::Unit::TestCase
     BLOCK
 
     headers = {
-      'Content-Type'   => 'text/plain',
+      'Content-Type'   => 'text/html',
       'Content-Length' => content.length.to_s,
     }
 

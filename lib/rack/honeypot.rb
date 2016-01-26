@@ -22,18 +22,24 @@ module Rack
         @logger.warn("[Rack::Honeypot] Spam bot detected; responded with null") unless @logger.nil?
         null_response
       else
-        status, headers, body = @app.call(env)
-
-        if @always_enabled || honeypot_header_present?(headers)
-          body = insert_honeypot(body)
-          headers = response_headers(headers, body)
+        @status, @headers, @response = @app.call(env)
+        if @headers["Content-Type"] and @headers["Content-Type"].include?("text/html") and (@always_enabled || honeypot_header_present?(@headers))
+          body = insert_honeypot(response_body(@response))
+          @headers.merge("Content-Length" => body.length.to_s)
+          [@status, @headers, [body]]
+        else
+          [@status, @headers, @response]
         end
-
-        [status, headers, body]
       end
     end
 
     private
+
+    def response_body(response)
+      body = response.respond_to?(:body) ? response.body : response
+      body = body.inject("") { |i, a| i << a } if body.respond_to?(:each)
+      body.to_s
+    end
 
     def spambot_submission?(form_hash)
       form_hash && form_hash[@input_name] && form_hash[@input_name] != @input_value
@@ -43,26 +49,16 @@ module Rack
       header = headers.delete(HONEYPOT_HEADER)
       header && header.index("enabled")
     end
-    
+
     def null_response
       [200, {'Content-Type' => 'text/html', "Content-Length" => "0"}, []]
     end
-    
-    def response_body(response)
-      body = ""
 
-      # The body may not be an array, so we need to call #each here.
-      response.each {|part| body << part }
-
-      body
-    end
-    
     def response_headers(headers, body)
       headers.merge("Content-Length" => body.length.to_s)
     end
 
     def insert_honeypot(body)
-      body = response_body(body)
       body.gsub!(/<\/head>/, css + "\n</head>")
       body.gsub!(/<form(.*)>/, '<form\1>' + "\n" + div)
       body

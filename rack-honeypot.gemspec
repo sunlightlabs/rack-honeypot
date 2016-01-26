@@ -22,5 +22,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency(%q<unindentable>, ["= 0.0.4"])
   s.add_dependency(%q<rack>, [">= 0"])
+  s.add_development_dependency('rack-test')
 end
 
